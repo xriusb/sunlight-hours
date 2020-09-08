@@ -8,8 +8,9 @@ import java.util.List;
 
 @Data
 @Builder
-public class City {
-    private String neighborhood;
+public class Neighborhood {
+    @JsonProperty("neighborhood")
+    private String name;
     @JsonProperty("apartments_height")
     private Integer apartmentsHeight;
     private List<Building> buildings;
