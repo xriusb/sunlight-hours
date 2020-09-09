@@ -1,9 +1,9 @@
 # Sunlight hours Calculator
 
-###Set Up the Application
+### Set Up the Application
 This is a SpringBoot Application 
 
-###API End Points
+### API End Points
 - init​ method that takes a String containing a JSON describing the city, with this format:
   [{ neighborhood: <name_string>, apartments_height: <number>, buildings: [{name:
   <name_string>, apartments_count: <number>, distance: <number>}]}]
