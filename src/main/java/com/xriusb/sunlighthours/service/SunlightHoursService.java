@@ -29,6 +29,10 @@ public class SunlightHoursService {
 
     @Value("${app.earthRadius}")
     private BigDecimal earthRadius;
+    @Value("${app.sunriseTime}")
+    private String sunriseTime;
+    @Value("${app.sunsetTime}")
+    private String sunsetTime;
 
     @Autowired
     private Sun geometricUtils;
@@ -40,8 +44,8 @@ public class SunlightHoursService {
     }
 
     public String getSunlightHours(String neighborhoodName, String building, Integer apartmentFloor) {
-        LocalTime sunrise = LocalTime.parse("08:14:00");
-        LocalTime sunset = LocalTime.parse("17:25:00");
+        LocalTime sunrise = LocalTime.parse(this.sunriseTime);
+        LocalTime sunset = LocalTime.parse(this.sunsetTime);
         LocalTime currentTime = null;
         String startTimeApartmentSunlight;
         String endTimeApartmentSunlight;
