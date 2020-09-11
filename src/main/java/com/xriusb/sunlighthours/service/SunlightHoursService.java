@@ -7,6 +7,7 @@ import com.xriusb.sunlighthours.model.Neighborhood;
 import lombok.Getter;
 import lombok.Setter;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
 import java.awt.geom.Line2D;
@@ -25,6 +26,9 @@ import static java.util.Objects.nonNull;
 public class SunlightHoursService {
 
     private final List<Neighborhood> neighborhoods = new ArrayList<>();
+
+    @Value("${app.earthRadius}")
+    private BigDecimal earthRadius;
 
     @Autowired
     private Sun geometricUtils;
@@ -62,7 +66,7 @@ public class SunlightHoursService {
         String result = null;
         while (currentTime.toSecondOfDay() <= sunset.toSecondOfDay()) {
             BigDecimal sunAngle = geometricUtils.getAngle(sunrise, sunset, currentTime);
-            Point2D.Double sunPosition = geometricUtils.getPosition(BigDecimal.valueOf(100), sunAngle);
+            Point2D.Double sunPosition = geometricUtils.getPosition(earthRadius, sunAngle);
 
             Line2D.Float sunRayToApartmentFloor = new Line2D.Float(apartment.getEastFloorLocation(), sunPosition);
             Line2D.Float sunRayToApartmentRoof = new Line2D.Float(apartment.getEastRoofLocation(), sunPosition);
@@ -79,7 +83,7 @@ public class SunlightHoursService {
         String result = null;
         while (currentTime.toSecondOfDay() <= sunset.toSecondOfDay()) {
             BigDecimal sunAngle = geometricUtils.getAngle(sunrise, sunset, currentTime);
-            Point2D.Double sunPosition = geometricUtils.getPosition(BigDecimal.valueOf(100), sunAngle);
+            Point2D.Double sunPosition = geometricUtils.getPosition(earthRadius, sunAngle);
 
             Line2D.Float sunRayToApartmentFloor = new Line2D.Float(apartment.getWestFloorLocation(), sunPosition);
             Line2D.Float sunRayToApartmentRoof = new Line2D.Float(apartment.getWestRoofLocation(), sunPosition);
