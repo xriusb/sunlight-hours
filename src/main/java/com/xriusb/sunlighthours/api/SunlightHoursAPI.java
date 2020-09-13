@@ -18,8 +18,9 @@ public class SunlightHoursAPI {
     private final SunlightHoursService sunlightHoursService;
 
     @PostMapping
-    public ResponseEntity init(@Valid @RequestBody List<Neighborhood> cities) {
-        return ResponseEntity.ok(sunlightHoursService.save(cities));
+    public ResponseEntity init(@Valid @RequestBody List<Neighborhood> city) {
+        sunlightHoursService.save(city);
+        return ResponseEntity.ok().build();
     }
 
     @GetMapping("/{neighbourhood}/{building}/{apartment}")

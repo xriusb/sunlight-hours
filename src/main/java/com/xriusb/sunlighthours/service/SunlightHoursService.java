@@ -25,8 +25,6 @@ import static java.util.Objects.nonNull;
 @Service
 public class SunlightHoursService {
 
-    private final List<Neighborhood> neighborhoods = new ArrayList<>();
-
     @Value("${app.earthRadius}")
     private BigDecimal earthRadius;
     @Value("${app.sunriseTime}")
@@ -34,13 +32,14 @@ public class SunlightHoursService {
     @Value("${app.sunsetTime}")
     private String sunsetTime;
 
+    private final List<Neighborhood> neighborhoods = new ArrayList<>();
+
     @Autowired
     private Sun geometricUtils;
 
-    public List<Neighborhood> save(List<Neighborhood> neighborhoods) {
+    public void save(List<Neighborhood> neighborhoods) {
         this.neighborhoods.addAll(neighborhoods);
         this.neighborhoods.forEach(Neighborhood::setBuildingsShapes);
-        return this.neighborhoods;
     }
 
     public String getSunlightHours(String neighborhoodName, String building, Integer apartmentFloor) {
