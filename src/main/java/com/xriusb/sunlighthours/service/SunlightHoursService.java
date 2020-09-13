@@ -15,6 +15,7 @@ import java.awt.geom.Point2D;
 import java.awt.geom.Rectangle2D;
 import java.math.BigDecimal;
 import java.time.LocalTime;
+import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -33,6 +34,8 @@ public class SunlightHoursService {
     private String sunsetTime;
 
     private final List<Neighborhood> neighborhoods = new ArrayList<>();
+    DateTimeFormatter formatter = DateTimeFormatter.ofPattern("HH:mm:ss");
+
 
     @Autowired
     private Sun geometricUtils;
@@ -74,7 +77,7 @@ public class SunlightHoursService {
             Line2D.Float sunRayToApartmentFloor = new Line2D.Float(apartment.getEastFloorLocation(), sunPosition);
             Line2D.Float sunRayToApartmentRoof = new Line2D.Float(apartment.getEastRoofLocation(), sunPosition);
             if (!isApartmentNotShadowed(sunRayToApartmentFloor, sunRayToApartmentRoof, eastSideApartmentBuildings)) {
-                result = currentTime.toString();
+                result = currentTime.format(formatter);
                 break;
             }
             currentTime = currentTime.plusSeconds(1);
@@ -91,13 +94,13 @@ public class SunlightHoursService {
             Line2D.Float sunRayToApartmentFloor = new Line2D.Float(apartment.getWestFloorLocation(), sunPosition);
             Line2D.Float sunRayToApartmentRoof = new Line2D.Float(apartment.getWestRoofLocation(), sunPosition);
             if (isApartmentNotShadowed(sunRayToApartmentFloor, sunRayToApartmentRoof, westSideApartmentBuildings)) {
-                result = currentTime.toString();
+                result = currentTime.format(formatter);
                 break;
             }
             currentTime = currentTime.plusSeconds(1);
         }
         if (result == null) {
-            result = currentTime.toString();
+            result = currentTime.minusSeconds(1).format(formatter);
         }
         return result;
     }
