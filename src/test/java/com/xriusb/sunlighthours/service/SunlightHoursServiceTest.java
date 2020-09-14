@@ -46,11 +46,13 @@ class SunlightHoursServiceTest {
                 .build());
 
         testee.save(neighborhoods);
-        testee.setGeometricUtils(new Sun());
 
-        ReflectionTestUtils.setField(testee, "sunriseTime", LocalTime.parse("08:14:00"));
-        ReflectionTestUtils.setField(testee, "sunsetTime", LocalTime.parse("17:25:00"));
-        ReflectionTestUtils.setField(testee, "earthRadius", BigDecimal.valueOf(100));
+        Sun sun = new Sun();
+        ReflectionTestUtils.setField(sun, "sunriseTime", LocalTime.parse("08:14:00"));
+        ReflectionTestUtils.setField(sun, "sunsetTime", LocalTime.parse("17:25:00"));
+        ReflectionTestUtils.setField(sun, "earthRadius", BigDecimal.valueOf(100));
+
+        testee.setSun(sun);
     }
 
     @Test

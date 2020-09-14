@@ -7,7 +7,6 @@ import com.xriusb.sunlighthours.model.Neighborhood;
 import lombok.Getter;
 import lombok.Setter;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
 import java.awt.geom.Line2D;
@@ -26,18 +25,11 @@ import static java.util.Objects.nonNull;
 @Service
 public class SunlightHoursService {
 
-    @Value("${app.earthRadius}")
-    private BigDecimal earthRadius;
-    @Value("#{ T(java.time.LocalTime).parse('${app.sunriseTime}')}")
-    private LocalTime sunriseTime;
-    @Value("#{ T(java.time.LocalTime).parse('${app.sunsetTime}')}")
-    private LocalTime sunsetTime;
-
     private final List<Neighborhood> neighborhoods = new ArrayList<>();
     DateTimeFormatter formatter = DateTimeFormatter.ofPattern("HH:mm:ss");
 
     @Autowired
-    private Sun geometricUtils;
+    private Sun sun;
 
     public void save(List<Neighborhood> neighborhoods) {
         this.neighborhoods.addAll(neighborhoods);
@@ -45,8 +37,6 @@ public class SunlightHoursService {
     }
 
     public String getSunlightHours(String neighborhoodName, String building, Integer apartmentFloor) {
-        LocalTime sunrise = sunriseTime;
-        LocalTime sunset = sunsetTime;
         LocalTime currentTime = null;
         String startTimeApartmentSunlight;
         String endTimeApartmentSunlight;
@@ -58,20 +48,20 @@ public class SunlightHoursService {
         List<Building> eastSideApartmentBuildings = neighborhood.getBuildingsAfter(apartment.getLocation().getX());
         List<Building> westSideApartmentBuildings = neighborhood.getBuildingsBefore(apartment.getLocation().getX());
 
-        currentTime = sunrise;
-        startTimeApartmentSunlight = getStartSunlightTime(sunrise, sunset, apartment, eastSideApartmentBuildings, currentTime);
+        currentTime = sun.getSunriseTime();
+        startTimeApartmentSunlight = getStartSunlightTime(apartment, eastSideApartmentBuildings, currentTime);
 
-        currentTime = getTimeFromSunOnTopOfTheApartment(sunrise, sunset, apartment);
-        endTimeApartmentSunlight = getEndSunlightTime(sunrise, sunset, apartment, westSideApartmentBuildings, currentTime);
+        currentTime = getTimeFromSunOnTopOfTheApartment(apartment);
+        endTimeApartmentSunlight = getEndSunlightTime(apartment, westSideApartmentBuildings, currentTime);
 
         return endTimeApartmentSunlight + " - " + startTimeApartmentSunlight;
     }
 
-    private String getStartSunlightTime(LocalTime sunrise, LocalTime sunset, Apartment apartment, List<Building> eastSideApartmentBuildings, LocalTime currentTime) {
+    private String getStartSunlightTime(Apartment apartment, List<Building> eastSideApartmentBuildings, LocalTime currentTime) {
         String result = null;
-        while (currentTime.toSecondOfDay() <= sunset.toSecondOfDay()) {
-            BigDecimal sunAngle = geometricUtils.getAngle(sunrise, sunset, currentTime);
-            Point2D.Double sunPosition = geometricUtils.getPosition(earthRadius, sunAngle);
+        while (currentTime.toSecondOfDay() <= sun.getSunsetTime().toSecondOfDay()) {
+            BigDecimal sunAngle = sun.getAngle(currentTime);
+            Point2D.Double sunPosition = sun.getPosition(sunAngle);
 
             Line2D.Float sunRayToApartmentFloor = new Line2D.Float(apartment.getEastFloorLocation(), sunPosition);
             Line2D.Float sunRayToApartmentRoof = new Line2D.Float(apartment.getEastRoofLocation(), sunPosition);
@@ -84,11 +74,11 @@ public class SunlightHoursService {
         return result;
     }
 
-    private String getEndSunlightTime(LocalTime sunrise, LocalTime sunset, Apartment apartment, List<Building> westSideApartmentBuildings, LocalTime currentTime) {
+    private String getEndSunlightTime(Apartment apartment, List<Building> westSideApartmentBuildings, LocalTime currentTime) {
         String result = null;
-        while (currentTime.toSecondOfDay() <= sunset.toSecondOfDay()) {
-            BigDecimal sunAngle = geometricUtils.getAngle(sunrise, sunset, currentTime);
-            Point2D.Double sunPosition = geometricUtils.getPosition(earthRadius, sunAngle);
+        while (currentTime.toSecondOfDay() <= sun.getSunsetTime().toSecondOfDay()) {
+            BigDecimal sunAngle = sun.getAngle(currentTime);
+            Point2D.Double sunPosition = sun.getPosition(sunAngle);
 
             Line2D.Float sunRayToApartmentFloor = new Line2D.Float(apartment.getWestFloorLocation(), sunPosition);
             Line2D.Float sunRayToApartmentRoof = new Line2D.Float(apartment.getWestRoofLocation(), sunPosition);
@@ -104,10 +94,10 @@ public class SunlightHoursService {
         return result;
     }
 
-    private LocalTime getTimeFromSunOnTopOfTheApartment(LocalTime sunrise, LocalTime sunset, Apartment apartment) {
+    private LocalTime getTimeFromSunOnTopOfTheApartment(Apartment apartment) {
         LocalTime currentTime;
-        BigDecimal startingWestSunAngle = geometricUtils.getAngle(apartment.getLocation().getX(), BigDecimal.valueOf(100));
-        currentTime = geometricUtils.getTimeFromPosition(sunrise, sunset, startingWestSunAngle);
+        BigDecimal startingWestSunAngle = sun.getAngle(apartment.getLocation().getX());
+        currentTime = sun.getTimeFromPosition(startingWestSunAngle);
         return currentTime;
     }
 
