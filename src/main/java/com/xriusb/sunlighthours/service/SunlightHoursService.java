@@ -125,22 +125,14 @@ public class SunlightHoursService {
     }
 
     public Apartment getApartment(String neighborhoodName, String buildingName, Float apartmentNumber) {
-        Neighborhood neighborhood = neighborhoods.stream().filter(n -> neighborhoodName.equals(n.getName()))
-                .findFirst().orElse(null);
+        Building building = neighborhoods.stream()
+                .filter(n -> neighborhoodName.equals(n.getName()))
+                .flatMap(n -> n.getBuildings().stream())
+                .filter(b -> b.getName().equals(buildingName)).findFirst().orElse(null);
 
-        if (nonNull(neighborhood)) {
-            Building building = neighborhood.getBuildings().stream()
-                    .filter(building1 -> buildingName.equals(building1.getName())).findFirst().orElse(null);
-
-            if (nonNull(building)) {
-                boolean isTopFloor = false;
-                if (building.getApartmentsCount() - 1 == apartmentNumber) {
-                    isTopFloor = true;
-                }
-                return new Apartment(new Point2D.Float((float) building.getShape().getX(), apartmentNumber),
-                        new Rectangle2D.Float((float) building.getShape().getX(), apartmentNumber, Neighborhood.APARTMENT_WIDTH, Neighborhood.APARTMENT_HEIGHT),
-                        isTopFloor);
-            }
+        if (nonNull(building)) {
+            return new Apartment(new Point2D.Float((float) building.getShape().getX(), apartmentNumber),
+                    new Rectangle2D.Float((float) building.getShape().getX(), apartmentNumber, Neighborhood.APARTMENT_WIDTH, Neighborhood.APARTMENT_HEIGHT));
         }
         return null;
     }

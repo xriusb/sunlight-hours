@@ -13,7 +13,6 @@ import java.awt.geom.Rectangle2D;
 public class Apartment {
     private Point2D.Float location;
     private Rectangle2D.Float shape;
-    private boolean isTopFloor;
 
     public Point2D.Float getEastFloorLocation() {
         Double x = location.getX() + 1;
@@ -34,11 +33,4 @@ public class Apartment {
         Double y = location.getY() + 1;
         return new Point2D.Float(location.x, y.floatValue());
     }
-
-    public Point2D.Float getCenterRoofLocation() {
-        Double x = location.getX() + 0.5;
-        Double y = location.getY() + 1;
-        return new Point2D.Float(x.floatValue(), y.floatValue());
-    }
-
 }
