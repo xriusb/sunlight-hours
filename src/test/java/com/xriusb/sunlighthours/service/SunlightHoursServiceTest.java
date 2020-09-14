@@ -6,9 +6,12 @@ import com.xriusb.sunlighthours.model.Building;
 import com.xriusb.sunlighthours.model.Neighborhood;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.springframework.test.util.ReflectionTestUtils;
 
 import java.awt.geom.Point2D;
 import java.awt.geom.Rectangle2D;
+import java.math.BigDecimal;
+import java.time.LocalTime;
 import java.util.Arrays;
 import java.util.Iterator;
 import java.util.List;
@@ -44,6 +47,10 @@ class SunlightHoursServiceTest {
 
         testee.save(neighborhoods);
         testee.setGeometricUtils(new Sun());
+
+        ReflectionTestUtils.setField(testee, "sunriseTime", LocalTime.parse("08:14:00"));
+        ReflectionTestUtils.setField(testee, "sunsetTime", LocalTime.parse("17:25:00"));
+        ReflectionTestUtils.setField(testee, "earthRadius", BigDecimal.valueOf(100));
     }
 
     @Test
@@ -70,14 +77,5 @@ class SunlightHoursServiceTest {
         Apartment result = testee.getApartment(NEIGHBORHOOD_NAME, BUILDING_2_NAME, 2f );
 
         assertThat(result.getLocation()).isEqualTo(new Point2D.Float(-1, 2));
-        assertThat(result.isTopFloor()).isFalse();
-    }
-
-    @Test
-    public void givenATopFloorApartment() {
-        Apartment result = testee.getApartment(NEIGHBORHOOD_NAME, BUILDING_3_NAME, 5f );
-
-        assertThat(result.getLocation()).isEqualTo(new Point2D.Float(3, 5));
-        assertThat(result.isTopFloor()).isTrue();
     }
 }
