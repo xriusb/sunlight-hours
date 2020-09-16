@@ -1,10 +1,29 @@
 # Sunlight hours Calculator
 
-### Set Up the Application
+### Run the application
 - This is a SpringBoot application.
 - After downloading the application, from the root directory execute the command **mvn clean package**
 - To start the applications, execute the command **java -jar target/sunlight-hours-0.0.1.jar**
 - This will start a Tomcat Server on the 8080 port
+
+### Objectives
+- The aim of it is to display the sunlight hours that a given apartment receives in a day, with this constraints: 
+    - Neighbourhoods have the buildings distributed by the provided distances
+    - In those neighbourhoods, the buildings are always aligned east to west
+    - The sun rises in the east and travels at a constant radial speed until setting
+    - The only shadows created in a neighbourhood are artefacts of the buildings in it
+    - We consider an apartment receives sunlight when either its eastern or western exterior wall is fully covered in 
+    sunlight and/or when the sun is directly overhead
+    - There is only one apartment per floor; in a building with N floors they are numbered from 0 to N-1
+
+### How the application works
+- The setting of the sunrise and sunset time, and the earth radius is done through application properties.
+- All building has a width and height of one unit.
+- The distance between buildings could be provided in decimals.
+- Once the application receives the city, it creates the neighborhood with the buildings in a 2 dimensional map, setting 
+the center in the middle of the distance created for all the buildings and the distance between them.
+- Once the application receives an apartment sunlight hours, it set the position of the sun on the distance specified 
+by the radius of the earth, and make the calculation
 
 ### API End Points
 - **init**​ method that takes a String containing a JSON describing the city, with this format:
