@@ -9,6 +9,7 @@ import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
 import java.util.List;
+import java.util.Optional;
 
 @RestController
 @RequestMapping("/api/v1/sunlight-hours")
@@ -24,10 +25,14 @@ public class SunlightHoursAPI {
     }
 
     @GetMapping("/{neighbourhood}/{building}/{apartment}")
-    public ResponseEntity getSunlightHours(@PathVariable("neighbourhood") String neighbourhood,
+    public ResponseEntity getSunlightHours(@PathVariable("neighbourhood") String neighbourhoodName,
                                            @PathVariable("building") String building,
                                            @PathVariable("apartment") Integer apartment) {
-        return ResponseEntity.ok(sunlightHoursService.getSunlightHours(neighbourhood, building, apartment));
+        Optional<Neighborhood> neighborhood = sunlightHoursService.getNeighborhood(neighbourhoodName);
+        if(neighborhood.isEmpty()) {
+            log.error("Neighborhood " + neighbourhoodName + " does not exists");
+            return ResponseEntity.badRequest().build();
+        }
+        return ResponseEntity.ok(sunlightHoursService.getSunlightHours(neighborhood.get(), building, apartment));
     }
-
 }

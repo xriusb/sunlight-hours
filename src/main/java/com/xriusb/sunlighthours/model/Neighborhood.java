@@ -42,7 +42,7 @@ public class Neighborhood {
         }
     }
 
-    public List<Building> getBuildingsAfter(double xCoordinate) {
+    public List<Building> getBuildingsInEastDirection(double xCoordinate) {
         List<Building> result = new ArrayList<>();
         buildings.forEach(building -> {
             if (building.getShape().getX() > xCoordinate ) {
@@ -52,7 +52,7 @@ public class Neighborhood {
         return result;
     }
 
-    public List<Building> getBuildingsBefore(double xCoordinate) {
+    public List<Building> getBuildingsInWestDirection(double xCoordinate) {
         List<Building> result = new ArrayList<>();
         buildings.forEach(building -> {
             if (building.getShape().getX() < xCoordinate ) {

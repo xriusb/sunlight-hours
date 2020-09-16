@@ -28,6 +28,8 @@ class SunlightHoursServiceTest {
     private static final Integer BUILDING_2_HEIGHT = 2;
     private static final Integer BUILDING_3_HEIGHT = 6;
 
+    private Neighborhood neighborhood;
+
     private SunlightHoursService testee;
 
     @BeforeEach
@@ -39,11 +41,13 @@ class SunlightHoursServiceTest {
                 Building.builder().name(BUILDING_2_NAME).apartmentsCount(2).distance(3f).build(),
                 Building.builder().name(BUILDING_3_NAME).apartmentsCount(6).distance(2f).build());
 
-        List<Neighborhood> neighborhoods = Arrays.asList(Neighborhood.builder()
+        neighborhood = Neighborhood.builder()
                 .name(NEIGHBORHOOD_NAME)
                 .apartmentsHeight(6)
                 .buildings(neighborhoodBuildings)
-                .build());
+                .build();
+
+        List<Neighborhood> neighborhoods = Arrays.asList(neighborhood);
 
         testee.save(neighborhoods);
 
@@ -57,7 +61,7 @@ class SunlightHoursServiceTest {
 
     @Test
     void givenNameOfNeighborhoodAndApartmentThenReturnsSunlightHours() {
-        assertThat(testee.getSunlightHours(NEIGHBORHOOD_NAME, BUILDING_2_NAME, 1 ))
+        assertThat(testee.getSunlightHours(neighborhood, BUILDING_2_NAME, 1 ))
                 .isEqualTo("14:33:07 - 11:15:38");
     }
 
@@ -76,7 +80,7 @@ class SunlightHoursServiceTest {
 
     @Test
     public void getApartmentPointAndRectangle() {
-        Apartment result = testee.getApartment(NEIGHBORHOOD_NAME, BUILDING_2_NAME, 2f );
+        Apartment result = testee.getApartment(neighborhood, BUILDING_2_NAME, 2f );
 
         assertThat(result.getLocation()).isEqualTo(new Point2D.Float(-1, 2));
     }

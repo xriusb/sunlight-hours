@@ -17,6 +17,7 @@ import java.time.LocalTime;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
 import static java.util.Objects.nonNull;
 
@@ -36,23 +37,16 @@ public class SunlightHoursService {
         this.neighborhoods.forEach(Neighborhood::setBuildingsShapes);
     }
 
-    public String getSunlightHours(String neighborhoodName, String building, Integer apartmentFloor) {
-        LocalTime currentTime = null;
-        String startTimeApartmentSunlight;
-        String endTimeApartmentSunlight;
+    public String getSunlightHours(Neighborhood neighborhood, String buildingName, Integer apartmentFloor) {
+        Apartment apartment = getApartment(neighborhood, buildingName, (float) apartmentFloor);
 
-        Neighborhood neighborhood = neighborhoods.stream().filter(n -> neighborhoodName.equals(n.getName()))
-                .findFirst().orElse(null);
-
-        Apartment apartment = getApartment(neighborhoodName, building, (float) apartmentFloor);
-        List<Building> eastSideApartmentBuildings = neighborhood.getBuildingsAfter(apartment.getLocation().getX());
-        List<Building> westSideApartmentBuildings = neighborhood.getBuildingsBefore(apartment.getLocation().getX());
-
-        currentTime = sun.getSunriseTime();
-        startTimeApartmentSunlight = getStartSunlightTime(apartment, eastSideApartmentBuildings, currentTime);
+        LocalTime currentTime = sun.getSunriseTime();
+        String startTimeApartmentSunlight = getStartSunlightTime(apartment,
+                neighborhood.getBuildingsInEastDirection(apartment.getLocation().getX()), currentTime);
 
         currentTime = getTimeFromSunOnTopOfTheApartment(apartment);
-        endTimeApartmentSunlight = getEndSunlightTime(apartment, westSideApartmentBuildings, currentTime);
+        String endTimeApartmentSunlight = getEndSunlightTime(apartment,
+                neighborhood.getBuildingsInWestDirection(apartment.getLocation().getX()), currentTime);
 
         return endTimeApartmentSunlight + " - " + startTimeApartmentSunlight;
     }
@@ -114,10 +108,12 @@ public class SunlightHoursService {
         return intersects;
     }
 
-    public Apartment getApartment(String neighborhoodName, String buildingName, Float apartmentNumber) {
-        Building building = neighborhoods.stream()
-                .filter(n -> neighborhoodName.equals(n.getName()))
-                .flatMap(n -> n.getBuildings().stream())
+    public Optional<Neighborhood> getNeighborhood(String name) {
+        return neighborhoods.stream().filter(n -> name.equals(n.getName())).findFirst();
+    }
+
+    public Apartment getApartment(Neighborhood neighborhood, String buildingName, Float apartmentNumber) {
+        Building building = neighborhood.getBuildings().stream()
                 .filter(b -> b.getName().equals(buildingName)).findFirst().orElse(null);
 
         if (nonNull(building)) {
