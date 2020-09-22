@@ -96,14 +96,8 @@ public class SunlightHoursService {
     private boolean isApartmentNotShadowed(Line2D.Float sunRayToApartmentFloor,
                                            Line2D.Float sunRayToApartmentRoof,
                                            List<Building> buildings) {
-        boolean intersects = false;
-        for(Building building : buildings) {
-            if (building.getShape().intersectsLine(sunRayToApartmentFloor)
-                    || building.getShape().intersectsLine(sunRayToApartmentRoof)) {
-                intersects = true;
-            }
-        }
-        return intersects;
+        return buildings.stream().anyMatch(building -> building.getShape().intersectsLine(sunRayToApartmentFloor)
+                || building.getShape().intersectsLine(sunRayToApartmentRoof));
     }
 
     public Optional<Neighborhood> getNeighborhood(String name) {
