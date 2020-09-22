@@ -1,5 +1,6 @@
 package com.xriusb.sunlighthours.api;
 
+import com.xriusb.sunlighthours.model.Building;
 import com.xriusb.sunlighthours.model.Neighborhood;
 import com.xriusb.sunlighthours.service.SunlightHoursService;
 import lombok.RequiredArgsConstructor;
@@ -26,13 +27,18 @@ public class SunlightHoursAPI {
 
     @GetMapping("/{neighbourhood}/{building}/{apartment}")
     public ResponseEntity getSunlightHours(@PathVariable("neighbourhood") String neighbourhoodName,
-                                           @PathVariable("building") String building,
-                                           @PathVariable("apartment") Integer apartment) {
+                                           @PathVariable("building") String buildingName,
+                                           @PathVariable("apartment") Integer apartmentNumber) {
         Optional<Neighborhood> neighborhood = sunlightHoursService.getNeighborhood(neighbourhoodName);
         if(neighborhood.isEmpty()) {
             log.error("Neighborhood " + neighbourhoodName + " does not exists");
-            return ResponseEntity.badRequest().build();
+            return ResponseEntity.badRequest().body("Neighborhood " + neighbourhoodName + " does not exists");
         }
-        return ResponseEntity.ok(sunlightHoursService.getSunlightHours(neighborhood.get(), building, apartment));
+        Optional<Building> building = sunlightHoursService.getBuilding(neighborhood.get(), buildingName);
+        if(building.isEmpty()) {
+            log.error("Building " + buildingName + " does not exists");
+            return ResponseEntity.badRequest().body("Building " + buildingName + " does not exists");
+        }
+        return ResponseEntity.ok(sunlightHoursService.getSunlightHours(neighborhood.get(), building.get(), apartmentNumber));
     }
 }

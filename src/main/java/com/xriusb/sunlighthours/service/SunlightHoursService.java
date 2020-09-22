@@ -19,8 +19,6 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
-import static java.util.Objects.nonNull;
-
 @Getter
 @Setter
 @Service
@@ -37,8 +35,8 @@ public class SunlightHoursService {
         this.neighborhoods.forEach(Neighborhood::setBuildingsShapes);
     }
 
-    public String getSunlightHours(Neighborhood neighborhood, String buildingName, Integer apartmentFloor) {
-        Apartment apartment = getApartment(neighborhood, buildingName, (float) apartmentFloor);
+    public String getSunlightHours(Neighborhood neighborhood, Building building, Integer apartmentFloor) {
+        Apartment apartment = getApartment(building, (float) apartmentFloor);
 
         LocalTime currentTime = sun.getSunriseTime();
         String startTimeApartmentSunlight = getStartSunlightTime(apartment,
@@ -112,14 +110,13 @@ public class SunlightHoursService {
         return neighborhoods.stream().filter(n -> name.equals(n.getName())).findFirst();
     }
 
-    public Apartment getApartment(Neighborhood neighborhood, String buildingName, Float apartmentNumber) {
-        Building building = neighborhood.getBuildings().stream()
-                .filter(b -> b.getName().equals(buildingName)).findFirst().orElse(null);
+    public Optional<Building> getBuilding(Neighborhood neighborhood, String buildingName) {
+        return neighborhood.getBuildings().stream()
+                .filter(b -> b.getName().equals(buildingName)).findFirst();
+    }
 
-        if (nonNull(building)) {
-            return new Apartment(new Point2D.Float((float) building.getShape().getX(), apartmentNumber),
-                    new Rectangle2D.Float((float) building.getShape().getX(), apartmentNumber, Neighborhood.APARTMENT_WIDTH, Neighborhood.APARTMENT_HEIGHT));
-        }
-        return null;
+    public Apartment getApartment(Building building, Float apartmentNumber) {
+        return new Apartment(new Point2D.Float((float) building.getShape().getX(), apartmentNumber),
+                new Rectangle2D.Float((float) building.getShape().getX(), apartmentNumber, Neighborhood.APARTMENT_WIDTH, Neighborhood.APARTMENT_HEIGHT));
     }
 }
