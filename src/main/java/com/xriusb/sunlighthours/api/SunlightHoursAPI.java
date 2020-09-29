@@ -34,7 +34,7 @@ public class SunlightHoursAPI {
             log.error("Neighborhood " + neighbourhoodName + " does not exists");
             return ResponseEntity.badRequest().body("Neighborhood " + neighbourhoodName + " does not exists");
         }
-        Optional<Building> building = sunlightHoursService.getBuilding(neighborhood.get(), buildingName);
+        Optional<Building> building = neighborhood.get().getBuilding(buildingName);
         if(building.isEmpty()) {
             log.error("Building " + buildingName + " does not exists");
             return ResponseEntity.badRequest().body("Building " + buildingName + " does not exists");

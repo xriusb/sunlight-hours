@@ -7,6 +7,7 @@ import lombok.Data;
 import java.awt.geom.Rectangle2D;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
 @Data
 @Builder
@@ -40,6 +41,11 @@ public class Neighborhood {
 
             buildingX += building.getDistance() + Neighborhood.APARTMENT_WIDTH;
         }
+    }
+
+    public Optional<Building> getBuilding(String buildingName) {
+        return buildings.stream()
+                .filter(b -> b.getName().equals(buildingName)).findFirst();
     }
 
     public List<Building> getBuildingsInEastDirection(double xCoordinate) {

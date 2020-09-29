@@ -104,11 +104,6 @@ public class SunlightHoursService {
         return neighborhoods.stream().filter(n -> name.equals(n.getName())).findFirst();
     }
 
-    public Optional<Building> getBuilding(Neighborhood neighborhood, String buildingName) {
-        return neighborhood.getBuildings().stream()
-                .filter(b -> b.getName().equals(buildingName)).findFirst();
-    }
-
     public Apartment getApartment(Building building, Float apartmentNumber) {
         return new Apartment(new Point2D.Float((float) building.getShape().getX(), apartmentNumber),
                 new Rectangle2D.Float((float) building.getShape().getX(), apartmentNumber, Neighborhood.APARTMENT_WIDTH, Neighborhood.APARTMENT_HEIGHT));
